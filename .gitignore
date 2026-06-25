@@ -1,0 +1,44 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+eggs/
+*.egg-info/
+
+# Installer logs
+pip-log.txt
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# IDE/editor folders
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints
+
+# Streamlit / local files
+merged_sales.xlsx
+store_*.xlsx
+
+# Environment variables / secrets
+.env
+*.key
+*.pem
+
+# pytest
+.pytest_cache/
+
+# mypy
+.mypy_cache/
