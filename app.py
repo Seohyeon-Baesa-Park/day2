@@ -84,48 +84,25 @@ st.divider()
 @st.cache_data(ttl=600)
 def get_seoul_weather():
     """Open-Meteo에서 서울의 현재 기온과 시간별 기온(오늘)을 가져옵니다."""
-    # wttr.in provides JSON at ?format=j1 and does not require an API key
-    url = "https://wttr.in/Seoul?format=j1"
+    url = (
+        "https://api.open-meteo.com/v1/forecast?"
+        "latitude=37.5665&longitude=126.9780&current_weather=true&hourly=temperature_2m"
+    )
     try:
         with urllib.request.urlopen(url, timeout=10) as resp:
             data = json.load(resp)
     except Exception:
         return None, None
 
-    # current condition
-    current_list = data.get("current_condition") or []
-    current = current_list[0] if current_list else None
-
-    # hourly data for today is under weather[0]['hourly']
-    weather = data.get("weather") or []
-    hourly = []
-    if weather:
-        hourly = weather[0].get("hourly", [])
-
-    if not hourly:
+    current = data.get("current_weather")
+    hourly = data.get("hourly", {})
+    times = hourly.get("time", [])
+    temps = hourly.get("temperature_2m", [])
+    if not times or not temps:
         return current, None
 
-    rows = []
+    hourly_df = pd.DataFrame({"시간": pd.to_datetime(times), "기온": temps})
     today = pd.Timestamp.now().date()
-    for h in hourly:
-        # wttr.time values are strings like '0', '300', '600', '900', etc.
-        tstr = h.get("time", "0")
-        try:
-            tval = int(tstr)
-        except Exception:
-            tval = 0
-        hour = tval if tval < 100 else (tval // 100)
-        # build datetime for today at that hour
-        now = pd.Timestamp.now()
-        dt = pd.Timestamp(year=now.year, month=now.month, day=now.day, hour=int(hour))
-        temp_c = h.get("tempC") or h.get("tempC")
-        try:
-            temp = float(temp_c)
-        except Exception:
-            temp = None
-        rows.append({"시간": dt, "기온": temp})
-
-    hourly_df = pd.DataFrame(rows)
     today_df = hourly_df[hourly_df["시간"].dt.date == today]
     return current, today_df
 
