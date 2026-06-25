@@ -91,23 +91,26 @@ def get_seoul_weather():
     try:
         with urllib.request.urlopen(url, timeout=10) as resp:
             data = json.load(resp)
-    except Exception:
-        return None, None
+    except Exception as exc:
+        return None, None, str(exc)
 
     current = data.get("current_weather")
     hourly = data.get("hourly", {})
     times = hourly.get("time", [])
     temps = hourly.get("temperature_2m", [])
     if not times or not temps:
-        return current, None
+        return current, None, None
 
     hourly_df = pd.DataFrame({"시간": pd.to_datetime(times), "기온": temps})
     today = pd.Timestamp.now().date()
     today_df = hourly_df[hourly_df["시간"].dt.date == today]
-    return current, today_df
+    return current, today_df, None
 
 st.subheader("서울 기상 정보")
-current_weather, seoul_today = get_seoul_weather()
+current_weather, seoul_today, weather_error = get_seoul_weather()
+if weather_error is not None:
+    st.error(f"날씨 API 호출 오류: {weather_error}")
+
 if current_weather is None:
     st.info("서울의 기상 정보를 불러올 수 없습니다. (Open-Meteo)")
 else:
