@@ -28,7 +28,8 @@ ENV/
 # Jupyter
 .ipynb_checkpoints
 
-# Streamlit / local files
+# Streamlit
+.streamlit/secrets.toml
 merged_sales.xlsx
 store_*.xlsx
 
@@ -42,3 +43,6 @@ store_*.xlsx
 
 # mypy
 .mypy_cache/
+
+# 수업 실습 폴더 (업로드 제외)
+수업 실습/
