@@ -5,6 +5,9 @@ import urllib.request
 import json
 import ssl
 from datetime import datetime
+from pathlib import Path
+
+DATA_PATH = Path(__file__).parent / "돼지갈비_식당_매출데이터.xlsx"
 
 st.set_page_config(
     page_title="Glacier Kitchen | Promotion & Analytics",
@@ -265,7 +268,7 @@ hr { border-color: rgba(0,102,139,0.08) !important; margin: 1.5rem 0 !important;
 # ── 데이터 ──────────────────────────────────────────────────
 @st.cache_data
 def load_data():
-    df = pd.read_excel("돼지갈비_식당_매출데이터.xlsx")
+    df = pd.read_excel(DATA_PATH)
     df["날짜"] = pd.to_datetime(df["날짜"])
     return df
 
