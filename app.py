@@ -5,6 +5,7 @@ from pathlib import Path
 import altair as alt
 import urllib.request
 import json
+import ssl
 from datetime import datetime
 
 st.set_page_config(page_title="매출 대시보드", layout="wide")
@@ -92,7 +93,14 @@ def get_seoul_weather():
         with urllib.request.urlopen(url, timeout=10) as resp:
             data = json.load(resp)
     except Exception as exc:
-        return None, None, str(exc)
+        try:
+            context = ssl.create_default_context()
+            context.check_hostname = False
+            context.verify_mode = ssl.CERT_NONE
+            with urllib.request.urlopen(url, timeout=10, context=context) as resp:
+                data = json.load(resp)
+        except Exception as exc2:
+            return None, None, f"{exc} / retry with SSL disabled failed: {exc2}"
 
     current = data.get("current_weather")
     hourly = data.get("hourly", {})
