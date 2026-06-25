@@ -89,7 +89,7 @@ def get_seoul_weather():
         "latitude=37.5665&longitude=126.9780&hourly=temperature_2m&current_weather=true&timezone=Asia/Seoul"
     )
     try:
-        with urllib.request.urlopen(url, timeout=8) as resp:
+        with urllib.request.urlopen(url, timeout=10) as resp:
             data = json.load(resp)
     except Exception:
         return None, None
